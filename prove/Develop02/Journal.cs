@@ -10,24 +10,35 @@ public class Journal{
         }
     }
     public void Save(){
-        string csv = "";
-        foreach (Record record in _records)
-        {
-            string newLine=$"{record._date.ToShortDateString()};{record._prompt};{record._response}\n";
-            csv+=newLine;    
-        }
-        File.WriteAllText(_fileName,csv.ToString());
+            if(_fileName.Contains(".csv"))
+            {
+                string csv = "";
+                foreach (Record record in _records)
+                {
+                    string newLine=$"\"{record._date.ToShortDateString()}\",\"{record._prompt}\",\"{record._response}\"\n";
+                    csv+=newLine;    
+                }
+                File.WriteAllText(_fileName,csv.ToString());
+            }
+            else{
+                Console.WriteLine("Wrong extention file it must be .csv");
+            }
     }
     public void Load(){
-        string[] lines = System.IO.File.ReadAllLines(_fileName);
-        foreach (string line in lines)
-        {
-            string[] values = line.Split(";");
-            Record record = new Record();
-            record._date = Convert.ToDateTime(values[0]);
-            record._prompt = values[1];
-            record._response = values[2];
-            _records.Add(record);
-        }
+       
+            if(_fileName.Contains(".csv")){
+                string[] lines = System.IO.File.ReadAllLines(_fileName);
+                foreach (string line in lines)
+                {
+                    string[] values = line.Split(",");
+                    Record record = new Record();
+                    record._date = Convert.ToDateTime(values[0].Replace("\"",""));
+                    record._prompt = values[1].Replace("\"","");
+                    record._response = values[2].Replace("\"","");
+                    _records.Add(record);
+                }
+            }else{
+                Console.WriteLine("Wrong extention file it must be .csv");
+            }
     }
 }

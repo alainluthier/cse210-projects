@@ -15,6 +15,10 @@ public class Record{
         List<string> prompts = new List<string>(); 
         prompts.Add("Who was the most interesting person I interacted with today?");
         prompts.Add("What was the best part of my day?");
+        prompts.Add("What was the most difficult thing to do on this day?");
+        prompts.Add("What would you like to remember from this day?");
+        prompts.Add("Did you meet a new person today?");
+        prompts.Add("Did you discover something new about yourself this day?");
         prompts.Add("How did I see the hand of the Lord in my life today?");
         prompts.Add("What was the strongest emotion I felt today?");
         prompts.Add("If I had one thing I could do over today, what would it be?");

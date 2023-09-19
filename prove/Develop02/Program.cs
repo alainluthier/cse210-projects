@@ -29,12 +29,12 @@ class Program
                     journal.Display();
                     break;
                 case 3:
-                    Console.WriteLine("What is the filename?");
+                    Console.WriteLine("What is the filename? (It could be .json or .csv extension)");
                     journal._fileName=Console.ReadLine();
                     journal.Load();
                     break;
                 case 4:
-                    Console.WriteLine("What is the filename?");
+                    Console.WriteLine("What is the filename? (It could be .json or .csv extension)");
                     journal._fileName=Console.ReadLine();
                     journal.Save();
                     break;
