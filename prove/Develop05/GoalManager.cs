@@ -72,6 +72,7 @@ public class GoalManager{
         Console.WriteLine("1. Simple Goal");
         Console.WriteLine("2. Eternal Goal");
         Console.WriteLine("3. Checklist Goal");
+        Console.WriteLine("4. Negative Goal");
         Console.Write("What type of goal would you like to create? ");
         option = int.Parse(Console.ReadLine());
         switch(option){
@@ -110,6 +111,16 @@ public class GoalManager{
 
                 ChecklistGoal checklistGoal = new ChecklistGoal(name,description,points,times,bonus);
                 _goals.Add(checklistGoal);
+                break;
+            case 4:
+                Console.Write("What is the name of your goal? ");
+                name = Console.ReadLine();
+                Console.Write("What is a short description of it? ");
+                description = Console.ReadLine();
+                Console.Write("What is the amount of points associated with this goal? ");
+                points = int.Parse(Console.ReadLine());
+                NegativeGoal negativelGoal = new NegativeGoal(name,description,points);
+                _goals.Add(negativelGoal);
                 break;
             default:
                 Console.WriteLine("Select a valid goal");
@@ -174,6 +185,10 @@ public class GoalManager{
                         case "ChecklistGoal":
                             ChecklistGoal checklistGoal = new ChecklistGoal(array[0],array[1],int.Parse(array[2]),int.Parse(array[3]),int.Parse(array[4]),int.Parse(array[5]));
                             _goals.Add(checklistGoal);
+                            break;
+                        case "NegativeGoal":
+                            NegativeGoal negative = new NegativeGoal(array[0],array[1],int.Parse(array[2]));
+                            _goals.Add(negative);
                             break;
                     }
                 }
