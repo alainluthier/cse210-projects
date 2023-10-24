@@ -18,4 +18,7 @@ public class Admin:User{
             return false;
         }
     }
+    public string GetCompleteStringRepresentation(){
+        return $"{_username};{_password};{_name}";
+    }
 }

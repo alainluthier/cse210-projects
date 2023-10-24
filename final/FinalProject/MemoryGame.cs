@@ -1,10 +1,15 @@
 public class MemoryGame{
-    private User _user;
+    private Player _user;
     private List<Element> _matrix = new List<Element>();
     private int _time;
     private DateTime _date;
     //A default matrix of 4x4
-    public MemoryGame(User user){
+    public MemoryGame(Player user,DateTime date,int time){
+        _user=user;
+        _time=time;
+        _date=date;
+    }
+    public MemoryGame(Player user){
         _date = DateTime.Now;
         _time=0;
         _user=user;
@@ -33,6 +38,15 @@ public class MemoryGame{
             }
         }
         StartMatrix();
+    }
+    public DateTime getDate(){
+        return _date;
+    }
+    public Player getUser(){
+        return _user;
+    }
+    public int getTime(){
+        return _time;
     }
     public void Shuffle()  
     {  
@@ -156,5 +170,8 @@ public class MemoryGame{
             Thread.Sleep(250);
             Console.Write("\b \b");
         }
+    }
+    public string GetCompleteStringRepresentation(){
+        return $"{_user.getUserName()};{_date};{_time}";
     }
 }

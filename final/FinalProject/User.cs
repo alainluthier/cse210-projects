@@ -10,4 +10,8 @@ public abstract class User{
     }
     public abstract bool Login(string username,string password);
     public abstract bool ChangePassword(string password,string newPassword);
+    
+    public string getUserName(){
+        return _username;
+    }
 }

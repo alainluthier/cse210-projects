@@ -1,5 +1,5 @@
 public class MenuGame{
-    private List<User> _players = new List<User>();
+    private List<Player> _players = new List<Player>();
     private List<MemoryGame> _games = new List<MemoryGame>();
     private Admin _admin;
     private Player _player;
@@ -29,6 +29,23 @@ public class MenuGame{
             string name = Console.ReadLine();
             _admin = new Admin(username,password,name);
         }
+        if(File.Exists("games.csv")){
+            string[] lines = System.IO.File.ReadAllLines("games.csv");
+            foreach (string line in lines)
+            {
+                string[] values = line.Split(";");
+                foreach (Player player in _players)
+                {
+                    if(player.getUserName()==values[0]){           
+                        DateTime date=DateTime.Parse(values[1]);
+                        int time=int.Parse(values[2]);
+                        MemoryGame mg = new MemoryGame(player,date,time);
+                        _games.Add(mg);
+                    }
+                }    
+            }
+        }
+        
         Start();
     }
     public void Start(){
@@ -45,7 +62,7 @@ public class MenuGame{
                 Login();
                 break;
             case 2:
-                DisplayPlayersScore();
+                DisplayScores();
                 break;
             }
         }while(option!=3);
@@ -94,7 +111,7 @@ public class MenuGame{
         _type="";
         Console.Clear();
     }
-    public void DisplayPlayersScore(){
+    public void DisplayScores(){
         foreach (Player p in _players)
         {
             Console.WriteLine($"Name: {p.getNickName()} \tBest Score: {p.getBestScore()}");
@@ -113,10 +130,19 @@ public class MenuGame{
         option = int.Parse(Console.ReadLine());
         switch(option){
             case 1:
-                
+                AddPlayer();
+                SavePlayers();
                 break;
             case 2:
-                
+                DisplayPlayers();
+                break;
+            case 3:
+                BackupGame();
+                break;
+            case 4:
+                RestoreBackup();
+                SavePlayers();
+                SaveGames();
                 break;
             }
         }while(option!=5);
@@ -134,20 +160,145 @@ public class MenuGame{
         switch(option){
             case 1:
                 MemoryGame memoryGame = new MemoryGame(_player);
+                if (memoryGame.IsWin()){
+                    _games.Add(memoryGame);
+                    updateBestScore(_player);
+                    SaveGames();
+                }
                 break;
             case 2:
-                
+                foreach (MemoryGame m in _games)
+                {
+                    Player p =m.getUser();
+                    if(p.getUserName()==_player.getUserName()){
+                        Console.WriteLine($"Date: {m.getDate()} \tScore: {m.getTime()} seconds.");
+                    }
+                }
                 break;
             }
         }while(option!=3);
     }
-    public void AddUser(){
-
+    public void AddPlayer(){
+        Console.Write("\nEnter username: ");
+        string username = Console.ReadLine();
+        Console.Write("\nEnter password: ");
+        string password1 = Console.ReadLine();
+        Console.Write("\nEnter password again: ");
+        string password2 = Console.ReadLine();
+        if (password1!=password2){
+            Console.Write("\nPasswords doesn't match");
+            return;
+        }
+        Console.Write("\nEnter name: ");
+        string name = Console.ReadLine();
+        Console.Write("\nEnter nick name: ");
+        string nickname = Console.ReadLine();
+        Player player = new Player(username,password1,name,nickname,0);
+        _players.Add(player);
+    }
+    public void DisplayPlayers(){
+        Console.WriteLine("\n");
+        foreach (Player player in _players)
+        {
+            Console.WriteLine(player.GetStringRepresentation());
+        }
+    }
+    public void updateBestScore(Player player){
+        int min=-1;
+        bool sw = false;
+        foreach (MemoryGame m in _games)
+        {
+            if(m.getUser().getUserName()==player.getUserName()){
+                if(sw==false){
+                    min=m.getTime();
+                    sw=true;
+                }else{
+                    if(m.getTime()<min){
+                        min=m.getTime();
+                    }
+                }
+            }
+        }
+        if (min!=-1){
+            player.setBestScore(min);
+        }
+        foreach (Player p in _players)
+        {
+            if(p.getUserName()==player.getUserName()){
+                p.setBestScore(player.getBestScore());
+            }
+        }
+    }
+    public void SavePlayers(){
+        string txt = _admin.GetCompleteStringRepresentation()+"\n";
+        foreach (Player player in _players)
+        {
+            string newLine=$"{player.GetCompleteStringRepresentation()}\n";
+            txt+=newLine;    
+        }
+        File.WriteAllText("users.csv",txt.ToString());
+    }
+    public void SaveGames(){
+        string txt ="";
+        foreach (MemoryGame m in _games)
+        {
+            string newLine=$"{m.GetCompleteStringRepresentation()}\n";
+            txt+=newLine;   
+        }
+        File.WriteAllText("games.csv",txt.ToString());
     }
     public void BackupGame(){
-
+        Console.Write("What is the filename for the backup? ");
+        string fileName = Console.ReadLine();
+        string txt = _admin.GetCompleteStringRepresentation()+"\n";
+        foreach (Player player in _players)
+        {
+            string newLine=$"{player.GetCompleteStringRepresentation()}\n";
+            txt+=newLine;    
+        }
+        txt+="=;=;=;=;=;=\n";   
+        foreach (MemoryGame m in _games)
+        {
+            string newLine=$"{m.GetCompleteStringRepresentation()}\n";
+            txt+=newLine;   
+        }
+        File.WriteAllText(fileName,txt.ToString());
     }
-    public void LoadBackup(){
-
+    public void RestoreBackup(){
+        Console.Write("What is the filename backup file? ");
+        string fileName = Console.ReadLine();
+        List<Player> players = new List<Player>();
+        List<MemoryGame> games = new List<MemoryGame>();
+        string[] lines = System.IO.File.ReadAllLines(fileName);
+        int i=0;
+        bool swGames=false;
+        foreach (string line in lines)
+        {
+            string[] values = line.Split(";");
+            if (i==0){
+                _admin = new Admin(values[0],values[1],values[2]);
+                i=i+1;
+            }else{
+                if (values[0]=="="){
+                    swGames=true;
+                }else{
+                    if(swGames==false){
+                        Player player = new Player(values[0],values[1],values[2],values[3],int.Parse(values[4]));
+                        players.Add(player);
+                    }else{
+                        foreach (Player player in players)
+                        {
+                            if(player.getUserName()==values[0]){
+                                MemoryGame memoryGame = new MemoryGame(player,DateTime.Parse(values[1]),int.Parse(values[2]));
+                                games.Add(memoryGame);
+                            }
+                        }
+                        
+                    }
+                }
+            }
+        }
+        _players=players;
+        _games=games;
     }
 }

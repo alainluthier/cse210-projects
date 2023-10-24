@@ -24,7 +24,16 @@ public class Player:User{
     public int getBestScore(){
         return _bestScore;
     }
+    public void setBestScore(int bestScore){
+        _bestScore=bestScore;
+    }
     public string getNickName(){
         return _nickName;
+    }
+    public string GetStringRepresentation(){
+        return $"Username: {_username}, Name:{_name}, NickName:{_nickName}";
+    }
+    public string GetCompleteStringRepresentation(){
+        return $"{_username};{_password};{_name};{_nickName};{_bestScore}";
     }
 }
